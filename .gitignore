@@ -22,3 +22,5 @@ _testmain.go
 *.exe
 *.test
 *.prof
+.env_dev
+test/.env_test
