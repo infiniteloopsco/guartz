@@ -30,7 +30,7 @@ func InitDB() {
 	db.AutoMigrate(&Execution{})
 
 	//Add FK
-	db.Model(&Execution{}).AddForeignKey("task_id", "tasks(id)", "RESTRICT", "RESTRICT")
+	db.Model(&Execution{}).AddForeignKey("task_id", "tasks(id)", "CASCADE", "CASCADE")
 
 	Gdb = &db
 }
