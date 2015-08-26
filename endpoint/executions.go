@@ -4,23 +4,22 @@ import (
 	"net/http"
 	"strconv"
 
-	"gopkg.in/validator.v2"
-
 	"github.com/gin-gonic/gin"
 	"github.com/infiniteloopsco/guartz/models"
 	"github.com/jinzhu/gorm"
+	"gopkg.in/validator.v2"
 )
 
 //ExecutionCreate serves the route POST /tasks/:task_id/executions
 func ExecutionCreate(c *gin.Context) {
 	models.InTx(func(txn *gorm.DB) bool {
 		var task models.Task
-		if txn.First(&task, c.Param("task_id")); task.ID != "" {
+		if txn.Where("id like ? ", c.Param("task_id")).First(&task); task.ID != "" {
 			var execution models.Execution
 			if err := c.BindJSON(&execution); err == nil {
 				execution.TaskID = task.ID
 				if err := validator.Validate(&execution); err == nil {
-					if txn.Save(&execution).Error == nil {
+					if txn.Create(&execution).Error == nil {
 						c.JSON(http.StatusOK, execution)
 						return true
 					} else {

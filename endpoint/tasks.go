@@ -11,14 +11,14 @@ import (
 //TaskList serves the route GET /tasks
 func TaskList(c *gin.Context) {
 	var tasks []models.Task
-	models.Gdb.Where("cron_id == 0").Find(&tasks)
+	models.Gdb.Find(&tasks)
 	c.JSON(http.StatusOK, tasks)
 }
 
 //TaskShow serves the route GET /tasks/:id
 func TaskShow(c *gin.Context) {
 	var task models.Task
-	models.Gdb.First(&task, c.Param("id"))
+	models.Gdb.Where("id like ?", c.Param("id")).First(&task)
 	if task.ID != "" {
 		c.JSON(http.StatusOK, task)
 	} else {
@@ -32,7 +32,7 @@ func TaskCreate(c *gin.Context) {
 		var task models.Task
 		if err := c.BindJSON(&task); err == nil {
 			if valid, errMap := models.ValidStruct(&task); valid {
-				if err := txn.Save(&task); err == nil {
+				if err := txn.Create(&task).Error; err == nil {
 					c.JSON(http.StatusOK, task)
 					return true
 				} else {
@@ -50,7 +50,7 @@ func TaskCreate(c *gin.Context) {
 func TaskDelete(c *gin.Context) {
 	models.InTx(func(txn *gorm.DB) bool {
 		var task models.Task
-		models.Gdb.First(&task, c.Param("id"))
+		models.Gdb.Where("id like ?", c.Param("id")).First(&task)
 		if task.ID != "" {
 			if err := txn.Delete(&task).Error; err == nil {
 				c.JSON(http.StatusOK, task)

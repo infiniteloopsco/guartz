@@ -12,7 +12,7 @@ type Execution struct {
 	Bandwith int    `json:"bandwith"`
 	Seconds  int    `json:"seconds"`
 	Machine  string `json:"machine"`
-	TaskID   string `json:"-" validate:"required"`
+	TaskID   string `json:"task_id"`
 
 	CreatedAt time.Time `json:"created_at"`
 }

@@ -6,8 +6,8 @@ import "github.com/gin-gonic/gin"
 func GetMainEngine() *gin.Engine {
 	router := gin.Default()
 	{
-		router.POST("/tasks/:task_id/executions", ExecutionCreate)
-		router.POST("tasks/:id", TaskCreate)
+		router.POST("tasks/:task_id/executions", ExecutionCreate)
+		router.POST("tasks", TaskCreate)
 		router.GET("tasks/:id", TaskShow)
 		router.GET("tasks/", TaskList)
 		router.DELETE("tasks/:id", TaskDelete)

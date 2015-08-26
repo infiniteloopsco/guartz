@@ -1,27 +1,49 @@
 package test
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+
+	"github.com/infiniteloopsco/guartz/models"
 	. "github.com/onsi/ginkgo"
-	// . "github.com/onsi/gomega"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Execution", func() {
 
-	// BeforeEach(func() {
-	// 	cleanDB()
-	// 	user = saveUser()
-	// 	project = addProject(user)
-	// })
-	//
-	// Describe("POST /execution/:project_id", func() {
-	//
-	// 	It("create an execution", func() {
-	// 		execution := models.Execution{}
-	// 		executionJSON, _ := json.Marshal(execution)
-	// 		resp, _ := client.CallRequest("POST", fmt.Sprintf("/executions/%d", project.ID), bytes.NewReader(executionJSON))
-	// 		Expect(resp.StatusCode).To(Equal(http.StatusOK))
-	// 	})
-	//
-	// })
+	BeforeEach(func() {
+		cleanDB()
+		task = createTask()
+	})
+
+	Describe("POST /tasks/:task_id/executions", func() {
+
+		It("create an execution", func() {
+			execution := models.Execution{}
+			executionJSON, _ := json.Marshal(execution)
+			resp, _ := client.CallRequest("POST", fmt.Sprintf("/tasks/%s/executions", task.ID), bytes.NewReader(executionJSON))
+			Expect(resp.StatusCode).To(Equal(http.StatusOK))
+		})
+
+	})
+
+	Context("after an execution is created", func() {
+
+		BeforeEach(func() {
+			execution = createExecution(task)
+		})
+
+		Describe("GET /tasks/:task_id/executions", func() {
+
+			FIt("create an execution", func() {
+				resp, _ := client.CallRequest("GET", fmt.Sprintf("/tasks/%s/executions", task.ID), bytes.NewReader(emptyJSON))
+				Expect(resp.StatusCode).To(Equal(http.StatusOK))
+			})
+
+		})
+
+	})
 
 })

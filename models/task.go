@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"os/exec"
 	"strings"
 	"time"
@@ -17,12 +18,11 @@ type Task struct {
 	Periodicity string    `json:"periodicity" validate:"required"`
 	CronID      int       `json:"-"`
 	Command     string    `json:"command" validate:"required"`
-	Args        string    `json:"args"`
 	CreatedAt   time.Time `json:"created_at"`
 }
 
 //BeforeCreate callback
-func (t *Task) BeforeCreate(txn *gorm.DB) {
+func (t *Task) BeforeCreate() {
 	if t.ID == "" {
 		t.ID = helpers.PseudoUUID()
 	}
@@ -40,12 +40,14 @@ func (t *Task) BeforeDelete(txn *gorm.DB) error {
 
 func (t *Task) Start(txn *gorm.DB) error {
 	pid, err := MasterCron.AddFunc(t.Periodicity, func() {
-		args := strings.Split(t.Args, " ")
-		exec.Command(t.Command, args...).Run()
+		commandArr := strings.Split(t.Command, " ")
+		command, args := commandArr[0], commandArr[1:]
+		exec.Command(command, args...).Run()
 	})
 	if err != nil {
 		return err
 	}
+	fmt.Println("Cron started")
 	return txn.Model(t).UpdateColumn("cron_id", int(pid)).Error
 }
 

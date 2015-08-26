@@ -10,7 +10,7 @@ var MasterCron *cron.Cron
 
 //InitCron system
 func InitCron() {
-	MasterCron := cron.New()
+	MasterCron = cron.New()
 	MasterCron.Start()
 	Gdb.Model(Task{}).Where("cron_id != 0").Updates(Task{CronID: 0})
 

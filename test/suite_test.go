@@ -18,9 +18,8 @@ import (
 )
 
 var (
-	ts         *httptest.Server
-	client     utils.Client
-	apiVersion = "v1"
+	ts     *httptest.Server
+	client utils.Client
 )
 
 func TestApi(t *testing.T) {
@@ -32,11 +31,12 @@ func TestApi(t *testing.T) {
 var _ = BeforeSuite(func() {
 	initEnv()
 	models.InitDB()
+	models.InitCron()
 	cleanDB()
 	ts = httptest.NewServer(endpoint.GetMainEngine())
 	client = utils.Client{
 		&http.Client{},
-		ts.URL + "/" + apiVersion,
+		ts.URL,
 		"application/json",
 	}
 })
