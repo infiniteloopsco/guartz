@@ -39,7 +39,7 @@ func ExecutionCreate(c *gin.Context) {
 //ExecutionList serves the route GET /tasks/:task_id/executions?page=0
 func ExecutionList(c *gin.Context) {
 	var executions []models.Execution
-	page, _ := strconv.Atoi(c.Param("task_id"))
+	page, _ := strconv.Atoi(c.Param("page"))
 	offset := page * models.ExecutionPage
 	models.Gdb.Where("task_id like ?", c.Param("task_id")).Offset(offset).Limit(models.ExecutionPage).Find(&executions)
 	c.JSON(http.StatusOK, executions)
