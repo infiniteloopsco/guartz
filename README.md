@@ -1,2 +1,2 @@
 # guartz
-Job scheduler with HTTP interface
+funk Job scheduler with HTTP interface
