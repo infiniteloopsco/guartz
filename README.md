@@ -1,2 +1,2 @@
 # guartz
-Job lcheduler with HTTP interface
+Job cheduler with HTTP interface
