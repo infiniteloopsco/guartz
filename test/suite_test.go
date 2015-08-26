@@ -46,6 +46,10 @@ var _ = AfterSuite(func() {
 	ts.Close()
 })
 
+var _ = BeforeEach(func() {
+	cleanDB()
+})
+
 func cleanDB() {
 	fmt.Println("***Cleaning***")
 	models.Gdb.Delete(models.Execution{})

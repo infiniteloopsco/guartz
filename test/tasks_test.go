@@ -12,15 +12,11 @@ import (
 
 var _ = Describe("Tasks", func() {
 
-	BeforeEach(func() {
-		cleanDB()
-	})
-
 	Describe("POST /tasks", func() {
 
 		It("creates a task", func() {
 			task = models.Task{
-				Periodicity: "",
+				Periodicity: "@every 2s",
 				Command:     "curl -X POST --data payload={\"channel\":\"#general\",\"text\":\"EOOO\"} https://hooks.slack.com/services/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",
 			}
 			taskJSON, _ := json.Marshal(task)

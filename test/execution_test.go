@@ -14,7 +14,6 @@ import (
 var _ = Describe("Execution", func() {
 
 	BeforeEach(func() {
-		cleanDB()
 		task = createTask()
 	})
 
