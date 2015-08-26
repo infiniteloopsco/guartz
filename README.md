@@ -1,3 +1,2 @@
-
-hola probando# guartz
+# guartz
 Job scheduler with HTTP interface
