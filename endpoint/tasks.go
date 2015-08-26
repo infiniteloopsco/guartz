@@ -15,7 +15,7 @@ func TaskList(c *gin.Context) {
 	c.JSON(http.StatusOK, tasks)
 }
 
-//TaskShow serves the route GET /tasks/:id
+//TaskShow serves the route GET /tasks/:task_id
 func TaskShow(c *gin.Context) {
 	var task models.Task
 	models.Gdb.Where("id like ?", c.Param("task_id")).First(&task)
@@ -46,7 +46,7 @@ func TaskCreate(c *gin.Context) {
 	})
 }
 
-//TaskDelete serves the route DELETE /tasks/:id
+//TaskDelete serves the route DELETE /tasks/:task_id
 func TaskDelete(c *gin.Context) {
 	models.InTx(func(txn *gorm.DB) bool {
 		var task models.Task
