@@ -1,2 +1,2 @@
 # guartz
-Job scheduler with HTTP interface
+JJob scheduler with HTTP interface
