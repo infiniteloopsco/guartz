@@ -30,13 +30,11 @@ func (t *Task) BeforeCreate() {
 
 //AfterCreate callback
 func (t *Task) AfterCreate(txn *gorm.DB) error {
-	fmt.Println("Task AfterCreate")
 	return t.Start(txn)
 }
 
 //AfterUpdate callback
 func (t *Task) AfterUpdate(txn *gorm.DB) error {
-	fmt.Println("Task AfterUpdate")
 	if err := t.Stop(txn); err != nil {
 		return err
 	}
@@ -63,10 +61,6 @@ func (t *Task) Start(txn *gorm.DB) error {
 
 func (t *Task) Stop(txn *gorm.DB) error {
 	entryID := cron.EntryID(t.CronID)
-	fmt.Println("1>> ", t.CronID)
-	fmt.Println("2>> ", entryID)
 	MasterCron.Remove(entryID)
-	fmt.Println("Cron schedules")
-	fmt.Println(MasterCron.Entries())
 	return txn.Model(t).UpdateColumn("cron_id", 0).Error
 }
