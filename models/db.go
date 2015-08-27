@@ -37,13 +37,16 @@ func InitDB() {
 
 //InTx executes function in a transaction
 func InTx(f func(*gorm.DB) bool) {
+	fmt.Println("***INIT TRANSACTION***")
 	txn := Gdb.Begin()
 	if txn.Error != nil {
 		panic(txn.Error)
 	}
 	if f(txn) == true {
+		fmt.Println("***TRANSACTION COMMITED***")
 		txn.Commit()
 	} else {
+		fmt.Println("***TRANSACTION ROLLBACK***")
 		txn.Rollback()
 	}
 	if err := txn.Error; err != nil && err != sql.ErrTxDone {
