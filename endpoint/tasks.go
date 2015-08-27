@@ -36,7 +36,9 @@ func TaskCreate(c *gin.Context) {
 				models.Gdb.Where("id like ?", task.ID).First(&taskExistent)
 				var err error
 				if task.ID != "" && taskExistent.ID != "" {
-					err = txn.Save(&task).Error
+					taskExistent.Periodicity = task.Periodicity
+					taskExistent.Command = task.Command
+					err = txn.Save(&taskExistent).Error
 				} else {
 					err = txn.Create(&task).Error
 				}
