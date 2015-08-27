@@ -63,5 +63,7 @@ func (t *Task) Start(txn *gorm.DB) error {
 
 func (t *Task) Stop(txn *gorm.DB) error {
 	MasterCron.Remove(cron.EntryID(t.CronID))
+	fmt.Println("Cron schedules")
+	fmt.Println(MasterCron.Entries())
 	return txn.Model(t).UpdateColumn("cron_id", 0).Error
 }
