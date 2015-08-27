@@ -53,6 +53,7 @@ func (t *Task) Start(txn *gorm.DB) error {
 		exec.Command(command, args...).Run()
 	})
 	if err != nil {
+		fmt.Println("ERR L56")
 		return err
 	}
 	fmt.Println("Cron started")
