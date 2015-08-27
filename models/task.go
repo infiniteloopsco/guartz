@@ -47,6 +47,8 @@ func (t *Task) BeforeDelete(txn *gorm.DB) error {
 }
 
 func (t *Task) Start(txn *gorm.DB) error {
+	fmt.Println("TASK")
+	fmt.Println(t)
 	pid, err := MasterCron.AddFunc(t.Periodicity, func() {
 		commandArr := strings.Split(t.Command, " ")
 		command, args := commandArr[0], commandArr[1:]
