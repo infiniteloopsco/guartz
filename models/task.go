@@ -30,11 +30,13 @@ func (t *Task) BeforeCreate() {
 
 //AfterCreate callback
 func (t *Task) AfterCreate(txn *gorm.DB) error {
+	fmt.Println("Task AfterCreate")
 	return t.Start(txn)
 }
 
 //AfterUpdate callback
 func (t *Task) AfterUpdate(txn *gorm.DB) error {
+	fmt.Println("Task AfterUpdate")
 	if err := t.Stop(txn); err != nil {
 		return err
 	}
@@ -47,15 +49,12 @@ func (t *Task) BeforeDelete(txn *gorm.DB) error {
 }
 
 func (t *Task) Start(txn *gorm.DB) error {
-	fmt.Println("TASK")
-	fmt.Println(t.Command)
 	pid, err := MasterCron.AddFunc(t.Periodicity, func() {
 		commandArr := strings.Split(t.Command, " ")
 		command, args := commandArr[0], commandArr[1:]
 		exec.Command(command, args...).Run()
 	})
 	if err != nil {
-		fmt.Println("ERR L56")
 		return err
 	}
 	fmt.Println("Cron started")
