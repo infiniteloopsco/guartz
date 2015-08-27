@@ -32,7 +32,15 @@ func TaskCreate(c *gin.Context) {
 		var task models.Task
 		if err := c.BindJSON(&task); err == nil {
 			if valid, errMap := models.ValidStruct(&task); valid {
-				if err := txn.Create(&task).Error; err == nil {
+				var taskExistent models.Task
+				models.Gdb.Where("id like ?", task.ID).First(&taskExistent)
+				var err error
+				if task.ID != "" && taskExistent.ID != "" {
+					err = txn.Save(&task).Error
+				} else {
+					err = txn.Create(&task).Error
+				}
+				if err == nil {
 					c.JSON(http.StatusOK, task)
 					return true
 				} else {

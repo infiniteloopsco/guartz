@@ -71,6 +71,21 @@ var _ = Describe("Tasks", func() {
 
 		})
 
+		Describe("POST /tasks", func() {
+
+			It("reschedule the task", func() {
+				updateTask := models.Task{
+					ID:          task.ID,
+					Periodicity: "@every 1m",
+					Command:     "curl -X POST --data payload={\"channel\":\"#general\",\"text\":\"EOOO\"} https://hooks.slack.com/services/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",
+				}
+				taskJSON, _ := json.Marshal(updateTask)
+				resp, _ := client.CallRequest("POST", "/tasks", bytes.NewReader(taskJSON))
+				Expect(resp.StatusCode).To(Equal(http.StatusOK))
+			})
+
+		})
+
 	})
 
 })

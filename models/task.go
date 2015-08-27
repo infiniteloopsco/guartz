@@ -33,6 +33,14 @@ func (t *Task) AfterCreate(txn *gorm.DB) error {
 	return t.Start(txn)
 }
 
+//AfterUpdate callback
+func (t *Task) AfterUpdate(txn *gorm.DB) error {
+	if err := t.Stop(txn); err != nil {
+		return err
+	}
+	return t.Start(txn)
+}
+
 //BeforeDelete callback
 func (t *Task) BeforeDelete(txn *gorm.DB) error {
 	return t.Stop(txn)
