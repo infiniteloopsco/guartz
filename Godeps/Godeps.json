@@ -60,10 +60,6 @@
 			"ImportPath": "gopkg.in/robfig/cron.v2",
 			"Comment": "v1-11-gbe2e0b0",
 			"Rev": "be2e0b0deed5a68ffee390b4583a13aff8321535"
-		},
-		{
-			"ImportPath": "gopkg.in/validator.v2",
-			"Rev": "8e445b9dc14ab1a1a78cc1f712df991307173ee6"
 		}
 	]
 }

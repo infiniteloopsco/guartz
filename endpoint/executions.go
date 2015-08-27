@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/infiniteloopsco/guartz/models"
 	"github.com/jinzhu/gorm"
-	"gopkg.in/validator.v2"
 )
 
 //ExecutionCreate serves the route POST /tasks/:task_id/executions
@@ -18,7 +17,7 @@ func ExecutionCreate(c *gin.Context) {
 			var execution models.Execution
 			if err := c.BindJSON(&execution); err == nil {
 				execution.TaskID = task.ID
-				if err := validator.Validate(&execution); err == nil {
+				if valid, errMap := models.ValidStruct(&execution); valid {
 					if txn.Create(&execution).Error == nil {
 						c.JSON(http.StatusOK, execution)
 						return true
@@ -26,7 +25,7 @@ func ExecutionCreate(c *gin.Context) {
 						c.JSON(http.StatusBadRequest, "Execution can't be saved")
 					}
 				} else {
-					c.JSON(http.StatusConflict, err.(validator.ErrorMap))
+					c.JSON(http.StatusConflict, errMap)
 				}
 			}
 		} else {
