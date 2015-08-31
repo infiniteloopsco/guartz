@@ -37,7 +37,7 @@ var _ = Describe("Execution", func() {
 		Describe("GET /tasks/:task_id/executions", func() {
 
 			It("create an execution", func() {
-				resp, _ := client.CallRequest("GET", fmt.Sprintf("/tasks/%s/executions", task.ID), bytes.NewReader(emptyJSON))
+				resp, _ := client.CallRequestNoBody("GET", fmt.Sprintf("/tasks/%s/executions", task.ID))
 				Expect(resp.StatusCode).To(Equal(http.StatusOK))
 				var executionsResp []models.Execution
 				defer resp.Body.Close()

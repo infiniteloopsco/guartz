@@ -10,8 +10,6 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var emptyJSON, _ = json.Marshal(struct{}{})
-
 func createTask() models.Task {
 	task := models.Task{
 		Periodicity: "@every 10s",

@@ -39,7 +39,7 @@ var _ = Describe("Tasks", func() {
 		Describe("GET /tasks", func() {
 
 			It("gets a list with one element", func() {
-				resp, _ := client.CallRequest("GET", "/tasks", bytes.NewReader(emptyJSON))
+				resp, _ := client.CallRequestNoBody("GET", "/tasks")
 				Expect(resp.StatusCode).To(Equal(http.StatusOK))
 				defer resp.Body.Close()
 				var tasksResp []models.Task
@@ -52,7 +52,7 @@ var _ = Describe("Tasks", func() {
 		Describe("GET /tasks/:id", func() {
 
 			It("gets a task by id", func() {
-				resp, _ := client.CallRequest("GET", "/tasks/"+task.ID, bytes.NewReader(emptyJSON))
+				resp, _ := client.CallRequestNoBody("GET", "/tasks/"+task.ID)
 				Expect(resp.StatusCode).To(Equal(http.StatusOK))
 				defer resp.Body.Close()
 				var taskResp models.Task
@@ -65,7 +65,7 @@ var _ = Describe("Tasks", func() {
 		Describe("DELETE /tasks/:id", func() {
 
 			It("deletes a task by id", func() {
-				resp, _ := client.CallRequest("DELETE", "/tasks/"+task.ID, bytes.NewReader(emptyJSON))
+				resp, _ := client.CallRequestNoBody("DELETE", "/tasks/"+task.ID)
 				Expect(resp.StatusCode).To(Equal(http.StatusOK))
 			})
 

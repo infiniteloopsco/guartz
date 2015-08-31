@@ -13,25 +13,26 @@ import (
 func ExecutionCreate(c *gin.Context) {
 	models.InTx(func(txn *gorm.DB) bool {
 		var task models.Task
-		if txn.Where("id like ? ", c.Param("task_id")).First(&task); task.ID != "" {
-			var execution models.Execution
-			if err := c.BindJSON(&execution); err == nil {
-				execution.TaskID = task.ID
-				if valid, errMap := models.ValidStruct(&execution); valid {
-					if txn.Create(&execution).Error == nil {
-						c.JSON(http.StatusOK, execution)
-						return true
-					} else {
-						c.JSON(http.StatusBadRequest, "Execution can't be saved")
-					}
-				} else {
-					c.JSON(http.StatusConflict, errMap)
-				}
-			}
-		} else {
+		if txn.Where("id like ? ", c.Param("task_id")).First(&task); task.ID == "" {
 			c.JSON(http.StatusNotFound, "")
+			return false
 		}
-		return false
+		var execution models.Execution
+		if err := c.BindJSON(&execution); err != nil {
+			c.JSON(http.StatusBadRequest, err)
+			return false
+		}
+		execution.TaskID = task.ID
+		if valid, errMap := models.ValidStruct(&execution); !valid {
+			c.JSON(http.StatusConflict, errMap)
+			return false
+		}
+		if txn.Create(&execution).Error != nil {
+			c.JSON(http.StatusBadRequest, "Execution can't be saved")
+			return false
+		}
+		c.JSON(http.StatusOK, execution)
+		return true
 	})
 }
 

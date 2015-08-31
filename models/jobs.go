@@ -22,8 +22,7 @@ func InitCron() {
 	InTx(func(txn *gorm.DB) bool {
 		for _, task := range tasks {
 			if err := task.Start(txn); err != nil {
-				fmt.Printf("Error >> %s", err)
-				return false
+				panic(err)
 			}
 		}
 		return true

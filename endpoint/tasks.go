@@ -19,10 +19,10 @@ func TaskList(c *gin.Context) {
 func TaskShow(c *gin.Context) {
 	var task models.Task
 	models.Gdb.Where("id like ?", c.Param("task_id")).First(&task)
-	if task.ID != "" {
-		c.JSON(http.StatusOK, task)
-	} else {
+	if task.ID == "" {
 		c.JSON(http.StatusNotFound, "")
+	} else {
+		c.JSON(http.StatusOK, task)
 	}
 }
 
@@ -30,29 +30,30 @@ func TaskShow(c *gin.Context) {
 func TaskCreate(c *gin.Context) {
 	models.InTx(func(txn *gorm.DB) bool {
 		var task models.Task
-		if err := c.BindJSON(&task); err == nil {
-			if valid, errMap := models.ValidStruct(&task); valid {
-				var taskExistent models.Task
-				models.Gdb.Where("id like ?", task.ID).First(&taskExistent)
-				var err error
-				if task.ID != "" && taskExistent.ID != "" {
-					taskExistent.Periodicity = task.Periodicity
-					taskExistent.Command = task.Command
-					err = txn.Save(&taskExistent).Error
-				} else {
-					err = txn.Create(&task).Error
-				}
-				if err == nil {
-					c.JSON(http.StatusOK, task)
-					return true
-				} else {
-					c.JSON(http.StatusBadRequest, "Couldn't create the task")
-				}
-			} else {
-				c.JSON(http.StatusConflict, errMap)
-			}
+		if err := c.BindJSON(&task); err != nil {
+			c.JSON(http.StatusBadRequest, err)
+			return false
 		}
-		return false
+		if valid, errMap := models.ValidStruct(&task); !valid {
+			c.JSON(http.StatusConflict, errMap)
+			return false
+		}
+		var taskExistent models.Task
+		models.Gdb.Where("id like ?", task.ID).First(&taskExistent)
+		var err error
+		if task.ID != "" && taskExistent.ID != "" {
+			taskExistent.Periodicity = task.Periodicity
+			taskExistent.Command = task.Command
+			err = txn.Save(&taskExistent).Error
+		} else {
+			err = txn.Create(&task).Error
+		}
+		if err != nil {
+			c.JSON(http.StatusBadRequest, "Couldn't create the task")
+			return false
+		}
+		c.JSON(http.StatusOK, task)
+		return true
 	})
 }
 
@@ -61,16 +62,15 @@ func TaskDelete(c *gin.Context) {
 	models.InTx(func(txn *gorm.DB) bool {
 		var task models.Task
 		models.Gdb.Where("id like ?", c.Param("task_id")).First(&task)
-		if task.ID != "" {
-			if err := txn.Delete(&task).Error; err == nil {
-				c.JSON(http.StatusOK, task)
-				return true
-			} else {
-				c.JSON(http.StatusBadRequest, "Could not delete the task")
-			}
-		} else {
+		if task.ID == "" {
 			c.JSON(http.StatusNotFound, "")
+			return false
 		}
-		return false
+		if err := txn.Delete(&task).Error; err != nil {
+			c.JSON(http.StatusBadRequest, "Could not delete the task")
+			return false
+		}
+		c.JSON(http.StatusOK, task)
+		return true
 	})
 }

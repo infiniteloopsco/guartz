@@ -47,6 +47,9 @@ func (t *Task) BeforeDelete(txn *gorm.DB) error {
 }
 
 func (t *Task) Start(txn *gorm.DB) error {
+	if t.Periodicity == "stop" {
+		return txn.Model(t).UpdateColumn("cron_id", 0).Error
+	}
 	pid, err := MasterCron.AddFunc(t.Periodicity, func() {
 		commandArr := strings.Split(t.Command, " ")
 		command, args := commandArr[0], commandArr[1:]
@@ -60,7 +63,10 @@ func (t *Task) Start(txn *gorm.DB) error {
 }
 
 func (t *Task) Stop(txn *gorm.DB) error {
-	entryID := cron.EntryID(t.CronID)
-	MasterCron.Remove(entryID)
-	return txn.Model(t).UpdateColumn("cron_id", 0).Error
+	if t.CronID != 0 {
+		entryID := cron.EntryID(t.CronID)
+		MasterCron.Remove(entryID)
+		return txn.Model(t).UpdateColumn("cron_id", 0).Error
+	}
+	return nil
 }
