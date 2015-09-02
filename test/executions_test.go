@@ -40,7 +40,7 @@ var _ = Describe("Execution", func() {
 
 			It("create an execution", func() {
 				var executionsResp []models.Execution
-				client.CallRequestNoBody("GET", fmt.Sprintf("/tasks/%s/executions", task.ID)).WithResponseJSON(executionsResp, func(resp *http.Response) error {
+				client.CallRequestNoBody("GET", fmt.Sprintf("/tasks/%s/executions", task.ID)).WithResponseJSON(&executionsResp, func(resp *http.Response) error {
 					Expect(resp.StatusCode).To(Equal(http.StatusOK))
 					Expect(len(executionsResp)).To(BeEquivalentTo(1))
 					return nil

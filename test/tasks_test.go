@@ -21,7 +21,7 @@ var _ = Describe("Tasks", func() {
 			}
 			taskJSON, _ := json.Marshal(task)
 			var taskResp models.Task
-			client.CallRequest("POST", "/tasks", bytes.NewReader(taskJSON)).WithResponseJSON(taskResp, func(resp *http.Response) error {
+			client.CallRequest("POST", "/tasks", bytes.NewReader(taskJSON)).WithResponseJSON(&taskResp, func(resp *http.Response) error {
 				Expect(resp.StatusCode).To(Equal(http.StatusOK))
 				Expect(taskResp.ID).NotTo(BeEmpty())
 				return nil
@@ -40,7 +40,7 @@ var _ = Describe("Tasks", func() {
 
 			It("gets a list with one element", func() {
 				var tasksResp []models.Task
-				client.CallRequestNoBody("GET", "/tasks").WithResponseJSON(tasksResp, func(resp *http.Response) error {
+				client.CallRequestNoBody("GET", "/tasks").WithResponseJSON(&tasksResp, func(resp *http.Response) error {
 					Expect(resp.StatusCode).To(Equal(http.StatusOK))
 					Expect(len(tasksResp)).To(BeEquivalentTo(1))
 					return nil
@@ -53,7 +53,7 @@ var _ = Describe("Tasks", func() {
 
 			It("gets a task by id", func() {
 				var taskResp models.Task
-				client.CallRequestNoBody("GET", "/tasks/"+task.ID).WithResponseJSON(taskResp, func(resp *http.Response) error {
+				client.CallRequestNoBody("GET", "/tasks/"+task.ID).WithResponseJSON(&taskResp, func(resp *http.Response) error {
 					Expect(resp.StatusCode).To(Equal(http.StatusOK))
 					Expect(taskResp.Command).To(BeEquivalentTo(task.Command))
 					return nil
