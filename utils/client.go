@@ -51,7 +51,7 @@ func (r *Response) WithResponseJSON(i interface{}, f func(*http.Response) error)
 		return r.err
 	}
 	defer r.resp.Body.Close()
-	if i != nil {
+	if i != nil && r.resp.StatusCode == http.StatusOK {
 		GetBodyJSON(r.resp, i)
 	}
 	return f(r.resp)
