@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-var ExecutionPage = 10
+var ExecutionPageSize = 10
 
 //Execution on the system
 type Execution struct {

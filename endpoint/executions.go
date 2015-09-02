@@ -36,11 +36,15 @@ func ExecutionCreate(c *gin.Context) {
 	})
 }
 
-//ExecutionList serves the route GET /tasks/:task_id/executions?page=0
+//ExecutionList serves the route GET /tasks/:task_id/executions?page=0&size=10
 func ExecutionList(c *gin.Context) {
 	var executions []models.Execution
 	page, _ := strconv.Atoi(c.Param("page"))
-	offset := page * models.ExecutionPage
-	models.Gdb.Where("task_id like ?", c.Param("task_id")).Offset(offset).Limit(models.ExecutionPage).Find(&executions)
+	size, _ := strconv.Atoi(c.Param("size"))
+	if size == 0 {
+		size = models.ExecutionPageSize
+	}
+	offset := page * models.ExecutionPageSize
+	models.Gdb.Where("task_id like ?", c.Param("task_id")).Order("created_at desc").Offset(offset).Limit(size).Find(&executions)
 	c.JSON(http.StatusOK, executions)
 }
