@@ -20,12 +20,12 @@ var _ = Describe("Tasks", func() {
 				Command:     "curl -X POST --data payload={\"channel\":\"#general\",\"text\":\"EOOO\"} https://hooks.slack.com/services/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",
 			}
 			taskJSON, _ := json.Marshal(task)
-			resp, _ := client.CallRequest("POST", "/tasks", bytes.NewReader(taskJSON))
-			Expect(resp.StatusCode).To(Equal(http.StatusOK))
 			var taskResp models.Task
-			defer resp.Body.Close()
-			getBodyJSON(resp, &taskResp)
-			Expect(taskResp.ID).NotTo(BeEmpty())
+			client.CallRequest("POST", "/tasks", bytes.NewReader(taskJSON)).WithResponseJSON(taskResp, func(resp *http.Response) error {
+				Expect(resp.StatusCode).To(Equal(http.StatusOK))
+				Expect(taskResp.ID).NotTo(BeEmpty())
+				return nil
+			})
 		})
 
 	})
@@ -39,12 +39,12 @@ var _ = Describe("Tasks", func() {
 		Describe("GET /tasks", func() {
 
 			It("gets a list with one element", func() {
-				resp, _ := client.CallRequestNoBody("GET", "/tasks")
-				Expect(resp.StatusCode).To(Equal(http.StatusOK))
-				defer resp.Body.Close()
 				var tasksResp []models.Task
-				getBodyJSON(resp, &tasksResp)
-				Expect(len(tasksResp)).To(BeEquivalentTo(1))
+				client.CallRequestNoBody("GET", "/tasks").WithResponseJSON(tasksResp, func(resp *http.Response) error {
+					Expect(resp.StatusCode).To(Equal(http.StatusOK))
+					Expect(len(tasksResp)).To(BeEquivalentTo(1))
+					return nil
+				})
 			})
 
 		})
@@ -52,12 +52,12 @@ var _ = Describe("Tasks", func() {
 		Describe("GET /tasks/:id", func() {
 
 			It("gets a task by id", func() {
-				resp, _ := client.CallRequestNoBody("GET", "/tasks/"+task.ID)
-				Expect(resp.StatusCode).To(Equal(http.StatusOK))
-				defer resp.Body.Close()
 				var taskResp models.Task
-				getBodyJSON(resp, &taskResp)
-				Expect(taskResp.Command).To(BeEquivalentTo(task.Command))
+				client.CallRequestNoBody("GET", "/tasks/"+task.ID).WithResponseJSON(taskResp, func(resp *http.Response) error {
+					Expect(resp.StatusCode).To(Equal(http.StatusOK))
+					Expect(taskResp.Command).To(BeEquivalentTo(task.Command))
+					return nil
+				})
 			})
 
 		})
@@ -65,8 +65,10 @@ var _ = Describe("Tasks", func() {
 		Describe("DELETE /tasks/:id", func() {
 
 			It("deletes a task by id", func() {
-				resp, _ := client.CallRequestNoBody("DELETE", "/tasks/"+task.ID)
-				Expect(resp.StatusCode).To(Equal(http.StatusOK))
+				client.CallRequestNoBody("DELETE", "/tasks/"+task.ID).WithResponse(func(resp *http.Response) error {
+					Expect(resp.StatusCode).To(Equal(http.StatusOK))
+					return nil
+				})
 			})
 
 		})
@@ -80,8 +82,10 @@ var _ = Describe("Tasks", func() {
 					Command:     "curl -X POST --data payload={\"channel\":\"#general\",\"text\":\"EOOO\"} https://hooks.slack.com/services/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",
 				}
 				taskJSON, _ := json.Marshal(updateTask)
-				resp, _ := client.CallRequest("POST", "/tasks", bytes.NewReader(taskJSON))
-				Expect(resp.StatusCode).To(Equal(http.StatusOK))
+				client.CallRequest("POST", "/tasks", bytes.NewReader(taskJSON)).WithResponse(func(resp *http.Response) error {
+					Expect(resp.StatusCode).To(Equal(http.StatusOK))
+					return nil
+				})
 			})
 
 		})

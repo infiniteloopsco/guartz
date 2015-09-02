@@ -22,8 +22,10 @@ var _ = Describe("Execution", func() {
 		It("create an execution", func() {
 			execution := models.Execution{}
 			executionJSON, _ := json.Marshal(execution)
-			resp, _ := client.CallRequest("POST", fmt.Sprintf("/tasks/%s/executions", task.ID), bytes.NewReader(executionJSON))
-			Expect(resp.StatusCode).To(Equal(http.StatusOK))
+			client.CallRequest("POST", fmt.Sprintf("/tasks/%s/executions", task.ID), bytes.NewReader(executionJSON)).WithResponse(func(resp *http.Response) error {
+				Expect(resp.StatusCode).To(Equal(http.StatusOK))
+				return nil
+			})
 		})
 
 	})
@@ -37,12 +39,12 @@ var _ = Describe("Execution", func() {
 		Describe("GET /tasks/:task_id/executions", func() {
 
 			It("create an execution", func() {
-				resp, _ := client.CallRequestNoBody("GET", fmt.Sprintf("/tasks/%s/executions", task.ID))
-				Expect(resp.StatusCode).To(Equal(http.StatusOK))
 				var executionsResp []models.Execution
-				defer resp.Body.Close()
-				getBodyJSON(resp, &executionsResp)
-				Expect(len(executionsResp)).To(BeEquivalentTo(1))
+				client.CallRequestNoBody("GET", fmt.Sprintf("/tasks/%s/executions", task.ID)).WithResponseJSON(executionsResp, func(resp *http.Response) error {
+					Expect(resp.StatusCode).To(Equal(http.StatusOK))
+					Expect(len(executionsResp)).To(BeEquivalentTo(1))
+					return nil
+				})
 			})
 
 		})
