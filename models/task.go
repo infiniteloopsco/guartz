@@ -1,10 +1,11 @@
 package models
 
 import (
-	"fmt"
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/infiniteloopsco/guartz/utils"
 
 	"gopkg.in/robfig/cron.v2"
 
@@ -46,6 +47,7 @@ func (t *Task) BeforeDelete(txn *gorm.DB) error {
 	return t.Stop(txn)
 }
 
+//Start the task
 func (t *Task) Start(txn *gorm.DB) error {
 	if t.Periodicity == "stop" {
 		return txn.Model(t).UpdateColumn("cron_id", 0).Error
@@ -58,14 +60,16 @@ func (t *Task) Start(txn *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Cron started")
+	utils.Log.Infof("The task %s has been started", t.ID)
 	return txn.Model(t).UpdateColumn("cron_id", int(pid)).Error
 }
 
+//Stop the task
 func (t *Task) Stop(txn *gorm.DB) error {
 	if t.CronID != 0 {
 		entryID := cron.EntryID(t.CronID)
 		MasterCron.Remove(entryID)
+		utils.Log.Infof("The task %s has been stopped", t.ID)
 		return txn.Model(t).UpdateColumn("cron_id", 0).Error
 	}
 	return nil

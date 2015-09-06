@@ -30,6 +30,7 @@ func TestApi(t *testing.T) {
 
 var _ = BeforeSuite(func() {
 	initEnv()
+	utils.InitLogTest()
 	models.InitDB()
 	models.InitCron()
 	cleanDB()
@@ -51,7 +52,7 @@ var _ = BeforeEach(func() {
 })
 
 func cleanDB() {
-	fmt.Println("***Cleaning***")
+	utils.Log.Info("***Cleaning***")
 	models.Gdb.Delete(models.Execution{})
 	models.Gdb.Delete(models.Task{})
 }

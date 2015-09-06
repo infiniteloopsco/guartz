@@ -3,6 +3,11 @@
 	"GoVersion": "go1.4.2",
 	"Deps": [
 		{
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Comment": "v0.8.6-11-g44512f0",
+			"Rev": "44512f0d08f7f81a75f5b04a2cb6d81ed25431ca"
+		},
+		{
 			"ImportPath": "github.com/gin-gonic/gin",
 			"Comment": "v1.0rc1-136-gfd5d429",
 			"Rev": "fd5d4294a5d5223d55fc76d7840f4b0ad91647bb"
@@ -41,6 +46,11 @@
 		{
 			"ImportPath": "github.com/qor/inflection",
 			"Rev": "45321e63b98c756df17369c027c1df89298e1288"
+		},
+		{
+			"ImportPath": "github.com/rifflock/lfshook",
+			"Comment": "v1.0",
+			"Rev": "05a24e24fa8d3a2eca8c2baf23aa2d5a2c51490c"
 		},
 		{
 			"ImportPath": "golang.org/x/net/context",

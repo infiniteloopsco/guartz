@@ -2,8 +2,9 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
+
+	"github.com/infiniteloopsco/guartz/utils"
 
 	"github.com/jinzhu/gorm"
 )
@@ -14,12 +15,11 @@ var Gdb *gorm.DB
 //InitDB connection
 func InitDB() {
 	//open db
-	fmt.Println("*** INIT DB ***")
+	utils.Log.Info("*** INIT DB ***")
 	connString := os.Getenv("MYSQL_DB")
 	db, err := gorm.Open("mysql", connString)
 	if err != nil {
-		fmt.Println("Unable to connect to the database")
-		panic(err)
+		utils.Log.Panic(err)
 	}
 	db.DB().Ping()
 	db.DB().SetMaxIdleConns(10)
@@ -37,19 +37,19 @@ func InitDB() {
 
 //InTx executes function in a transaction
 func InTx(f func(*gorm.DB) bool) {
-	fmt.Println("***INIT TRANSACTION***")
+	utils.Log.Info("***INIT TRANSACTION***")
 	txn := Gdb.Begin()
 	if txn.Error != nil {
-		panic(txn.Error)
+		utils.Log.Panic(txn.Error)
 	}
 	if f(txn) == true {
-		fmt.Println("***TRANSACTION COMMITED***")
+		utils.Log.Info("***TRANSACTION COMMITED***")
 		txn.Commit()
 	} else {
-		fmt.Println("***TRANSACTION ROLLBACK***")
+		utils.Log.Info("***TRANSACTION ROLLBACK***")
 		txn.Rollback()
 	}
 	if err := txn.Error; err != nil && err != sql.ErrTxDone {
-		panic(err)
+		utils.Log.Panic(err)
 	}
 }

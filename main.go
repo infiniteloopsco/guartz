@@ -6,6 +6,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/infiniteloopsco/guartz/utils"
+
+	"github.com/gin-gonic/gin"
 	"github.com/infiniteloopsco/guartz/endpoint"
 	"github.com/infiniteloopsco/guartz/models"
 
@@ -15,10 +18,13 @@ import (
 
 func main() {
 	initEnv()
+	utils.InitLog()
 	models.InitDB()
 	models.InitCron()
 
 	router := endpoint.GetMainEngine()
+	router.Use(gin.LoggerWithWriter(utils.LogWriter))
+	router.Use(gin.Recovery())
 	port := os.Getenv("PORT")
 
 	s := &http.Server{
