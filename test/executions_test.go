@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/infiniteloopsco/guartz/utils"
+
 	"github.com/infiniteloopsco/guartz/models"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -40,10 +42,15 @@ var _ = Describe("Execution", func() {
 
 			It("create an execution", func() {
 				var executionsResp []models.Execution
-				client.CallRequestNoBody("GET", fmt.Sprintf("/tasks/%s/executions", task.ID)).WithResponseJSON(&executionsResp, func(resp *http.Response) error {
-					Expect(resp.StatusCode).To(Equal(http.StatusOK))
-					Expect(len(executionsResp)).To(BeEquivalentTo(1))
-					return nil
+				client.CallRequestNoBody("GET", fmt.Sprintf("/tasks/%s/executions", task.ID)).Solve(utils.MapExec{
+					http.StatusOK: utils.InfoExec{
+						&executionsResp,
+						func(resp *http.Response) error {
+							Expect(resp.StatusCode).To(Equal(http.StatusOK))
+							Expect(len(executionsResp)).To(BeEquivalentTo(1))
+							return nil
+						},
+					},
 				})
 			})
 

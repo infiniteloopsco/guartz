@@ -55,7 +55,12 @@ func (t *Task) Start(txn *gorm.DB) error {
 	pid, err := MasterCron.AddFunc(t.Periodicity, func() {
 		commandArr := strings.Split(t.Command, " ")
 		command, args := commandArr[0], commandArr[1:]
-		exec.Command(command, args...).Run()
+		utils.Log.Infof("Running command %s with args: %v", command, args)
+		resp, err := exec.Command(command, args...).Output()
+		if err != nil {
+			utils.Log.Error(err)
+		}
+		utils.Log.Infof("Output: %s", string(resp))
 	})
 	if err != nil {
 		return err
