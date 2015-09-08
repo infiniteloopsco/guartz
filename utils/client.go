@@ -9,6 +9,8 @@ import (
 	"net/http"
 )
 
+var Default = 0
+
 //Client for http requests
 type Client struct {
 	*http.Client
@@ -79,6 +81,9 @@ func (r *Response) Solve(mapExec MapExec) error {
 		if val.Interface != nil {
 			GetBodyJSON(r.Resp, val.Interface)
 		}
+		return val.F(r.Resp)
+	}
+	if val, ok := mapExec[0]; ok {
 		return val.F(r.Resp)
 	}
 	return errors.New("Status key not found")
