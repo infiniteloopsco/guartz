@@ -31,11 +31,13 @@ func (t *Task) BeforeCreate() {
 
 //AfterCreate callback
 func (t *Task) AfterCreate(txn *gorm.DB) error {
+	utils.Log.Infof("task after create")
 	return t.Start(txn)
 }
 
 //AfterUpdate callback
 func (t *Task) AfterUpdate(txn *gorm.DB) error {
+	utils.Log.Infof("task after update")
 	if err := t.Stop(txn); err != nil {
 		return err
 	}
