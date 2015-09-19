@@ -51,10 +51,13 @@ func (t *Task) BeforeDelete(txn *gorm.DB) error {
 
 //Start the task
 func (t *Task) Start(txn *gorm.DB) error {
+	utils.Log.Info("Startin!!")
 	if t.Periodicity == "stop" {
 		return txn.Model(t).UpdateColumn("cron_id", 0).Error
 	}
 	pid, err := MasterCron.AddFunc(t.Periodicity, func() {
+		utils.Log.Info("Entries")
+		utils.Log.Info(MasterCron.Entries())
 		commandArr := strings.Split(t.Command, " ")
 		command, args := commandArr[0], commandArr[1:]
 		utils.Log.Infof("Running command %s with args: %v", command, args)
