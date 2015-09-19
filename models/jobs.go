@@ -21,9 +21,7 @@ func InitCron() {
 	utils.Log.Infof("***STARTING %d PROJECTS***\n", len(tasks))
 	InTx(func(txn *gorm.DB) bool {
 		for _, task := range tasks {
-			if err := task.Start(txn); err != nil {
-				panic(err)
-			}
+			go task.Start()
 		}
 		return true
 	})
