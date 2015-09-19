@@ -31,19 +31,15 @@ func (t *Task) BeforeCreate() {
 
 //AfterCreate callback
 func (t *Task) AfterCreate(txn *gorm.DB) error {
-	utils.Log.Infof("task after create")
-	go t.Start()
-	return nil
+	return t.Start(txn)
 }
 
 //AfterUpdate callback
 func (t *Task) AfterUpdate(txn *gorm.DB) error {
-	utils.Log.Infof("task after update")
 	if err := t.Stop(txn); err != nil {
 		return err
 	}
-	go t.Start()
-	return nil
+	return t.Start(txn)
 }
 
 //BeforeDelete callback
@@ -52,55 +48,27 @@ func (t *Task) BeforeDelete(txn *gorm.DB) error {
 }
 
 //Start the task
-func (t *Task) Start() {
-	InTx(func(txn *gorm.DB) bool {
-		utils.Log.Info("Startin!!")
-		if t.Periodicity == "stop" {
-			return txn.Model(t).UpdateColumn("cron_id", 0).Error == nil
-		}
-		pid, err := MasterCron.AddFunc(t.Periodicity, func() {
-			utils.Log.Info("Entries")
-			utils.Log.Info(MasterCron.Entries())
-			commandArr := strings.Split(t.Command, " ")
-			command, args := commandArr[0], commandArr[1:]
-			utils.Log.Infof("Running command %s with args: %v", command, args)
-			resp, err := exec.Command(command, args...).Output()
-			if err != nil {
-				utils.Log.Error(err)
-			}
-			utils.Log.Infof("Output: %s", string(resp))
-		})
+func (t *Task) Start(txn *gorm.DB) error {
+	utils.Log.Info("Startin!!")
+	if t.Periodicity == "stop" {
+		return txn.Model(t).UpdateColumn("cron_id", 0).Error
+	}
+	pid, err := MasterCron.AddFunc(t.Periodicity, func() {
+		commandArr := strings.Split(t.Command, " ")
+		command, args := commandArr[0], commandArr[1:]
+		utils.Log.Infof("Running command %s with args: %v", command, args)
+		resp, err := exec.Command(command, args...).Output()
 		if err != nil {
-			return false
+			utils.Log.Error(err)
 		}
-		utils.Log.Infof("The task %s has been started", t.ID)
-		return txn.Model(t).UpdateColumn("cron_id", int(pid)).Error == nil
+		utils.Log.Infof("Output: %s", string(resp))
 	})
+	if err != nil {
+		return err
+	}
+	utils.Log.Infof("The task %s has been started", t.ID)
+	return txn.Model(t).UpdateColumn("cron_id", int(pid)).Error
 }
-
-// func (t *Task) Start(txn *gorm.DB) error {
-// 	utils.Log.Info("Startin!!")
-// 	if t.Periodicity == "stop" {
-// 		return txn.Model(t).UpdateColumn("cron_id", 0).Error
-// 	}
-// 	pid, err := MasterCron.AddFunc(t.Periodicity, func() {
-// 		utils.Log.Info("Entries")
-// 		utils.Log.Info(MasterCron.Entries())
-// 		commandArr := strings.Split(t.Command, " ")
-// 		command, args := commandArr[0], commandArr[1:]
-// 		utils.Log.Infof("Running command %s with args: %v", command, args)
-// 		resp, err := exec.Command(command, args...).Output()
-// 		if err != nil {
-// 			utils.Log.Error(err)
-// 		}
-// 		utils.Log.Infof("Output: %s", string(resp))
-// 	})
-// 	if err != nil {
-// 		return err
-// 	}
-// 	utils.Log.Infof("The task %s has been started", t.ID)
-// 	return txn.Model(t).UpdateColumn("cron_id", int(pid)).Error
-// }
 
 //Stop the task
 func (t *Task) Stop(txn *gorm.DB) error {
