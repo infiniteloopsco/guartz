@@ -5,7 +5,7 @@ import "github.com/gin-gonic/gin"
 //GetMainEngine server & routes
 func GetMainEngine() *gin.Engine {
 	router := gin.Default()
-	root := router.Group("", AngularFilter)
+	root := router.Group("")
 	{
 		root.POST("tasks/:task_id/executions", ExecutionCreate)
 		root.GET("tasks/:task_id/executions", ExecutionList)
