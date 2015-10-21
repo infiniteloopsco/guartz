@@ -15,5 +15,5 @@ func IsDev() bool {
 }
 
 func isEnv(env string) bool {
-	return os.Getenv("GIN_MODE") == env
+	return os.Getenv("GUARTZ_MODE") == env
 }
