@@ -38,7 +38,11 @@ func main() {
 }
 
 func initEnv() {
-	if err := godotenv.Load(".env_dev"); err != nil {
-		log.Fatal("Error loading .env_dev file")
+	fileName := ".env_dev"
+	if utils.IsProd() {
+		fileName = ".env"
+	}
+	if err := godotenv.Load(fileName); err != nil {
+		log.Fatalf("Error loading %s file", fileName)
 	}
 }
